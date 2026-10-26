@@ -10,6 +10,7 @@ Built as a **Stamatics, IIT Kanpur Summer Project (May--July 2026)**.
 - Black--Scholes--Merton European call/put prices and first/second-order hedging sensitivities.
 - Risk-neutral Monte Carlo estimator with a 95% confidence interval.
 - Discretely rebalanced delta-hedging P&L experiment.
+- Reproducible historical SPY delta-hedging study using public daily closes and a trailing realized-volatility proxy.
 - Carr--Madan damped Fourier pricing using an `O(N log N)` FFT, with vectorized strike interpolation.
 - Automated tests that validate pricing identities and compare every numerical engine to the BSM solution.
 
@@ -37,6 +38,7 @@ source .venv/bin/activate
 pip install -e '.[dev]'
 pytest
 python examples/compare_methods.py
+python examples/backtest_spy.py
 ```
 
 Example output should show FFT prices within a few cents of BSM across strikes, plus a Monte Carlo confidence interval containing the analytical value.
@@ -56,6 +58,16 @@ examples/            # runnable comparison
 ## Research extensions
 
 The architecture is designed to support characteristic functions beyond BSM (Heston, Variance Gamma, Merton jump diffusion), calibration to implied-volatility surfaces, and transaction-cost-aware super/sub-hedging.
+
+## Historical backtest methodology
+
+`examples/backtest_spy.py` downloads daily SPY closes (2023-01-01 through 2025-08-29) from a public, versioned historical CSV and records the exact source in code. It opens a new 21-trading-day at-the-money call every 21 trading days, uses the preceding 21 days' realized volatility as the BSM volatility input, and rebalances a delta hedge daily. The output is the hedge error versus terminal payoff for each real SPY path.
+
+The underlying prices are observed market data. The options are **model-priced**, rather than historical option-chain quotes; this is a controlled discrete-hedging experiment, not a claim of historical option-trading profits. For a market-price backtest, replace the volatility proxy with synchronized historical implied-volatility/option-trade data from an appropriately licensed provider.
+
+### Latest reproducible run
+
+The included result ledger covers 667 SPY daily closes from 2023-01-03 through 2025-08-29, producing 30 non-overlapping 21-trading-day trades. Its mean absolute hedging error was **$2.52 per share** and root mean squared error was **$4.30 per share**. See `outputs/spy_delta_hedge_backtest_2023_2025.json` for the complete trade-by-trade ledger and methodology inputs.
 
 ## Disclaimer
 

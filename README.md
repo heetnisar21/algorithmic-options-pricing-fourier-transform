@@ -2,7 +2,6 @@
 
 Research-oriented Python implementation of arbitrage-free European option pricing. The project bridges stochastic calculus, the Black--Scholes--Merton (BSM) PDE, risk-neutral valuation, and fast Fourier transforms (FFT).
 
-Built as a **Stamatics, IIT Kanpur Summer Project (May--July 2026)**.
 
 ## What is implemented
 
